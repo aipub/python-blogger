@@ -28,7 +28,7 @@ class Blog(object):
 	"""
 	Base class for all blog objects.
 	"""
-	def __init__(self, serverapi, username, password, default_blog_id=None, appkey='0x001'):
+	def __init__(self, serverapi, username, password, default_blog_id=None, appkey='0x001', verbose=None):
 		"""
 		Args:
 			serverapi = URL to the XML-RPC API.
@@ -47,7 +47,7 @@ class Blog(object):
 			raise BlogError('XML-RPC API URL not found.')
 
 		# Connect to the api. Call listMethods to keep a dictionary of available methods
-		self.server             = xmlrpclib.ServerProxy(serverapi)
+		self.server             = xmlrpclib.ServerProxy(serverapi, verbose=verbose)
 		self.list_methods()
 
 	def list_methods(self):
@@ -97,8 +97,8 @@ class MetaWeblog(Blog):
 	This class extends Blog to implement metaWeblog API
 	"""
 
-	def __init__(self, serverapi, username, password, default_blog_id, appkey='0x001'):
-		Blog.__init__(self, serverapi, username, password, appkey, default_blog_id)
+	def __init__(self, serverapi, username, password, default_blog_id, appkey='0x001', **kwargs):
+		Blog.__init__(self, serverapi, username, password, appkey, default_blog_id, **kwargs)
 		
 	def get_recent_posts(self, numposts=10, blog_id=None):
 		"""
@@ -254,8 +254,8 @@ class WordPress(MetaWeblog):
 	
 	default_blog_id = 1
 	
-	def __init__(self, serverapi, username, password, default_blog_id=1):
-		MetaWeblog.__init__(self, serverapi, username, password, default_blog_id=default_blog_id)
+	def __init__(self, serverapi, username, password, default_blog_id=1, **kwargs):
+		MetaWeblog.__init__(self, serverapi, username, password, default_blog_id=default_blog_id, **kwargs)
 		
 	def get_post_status_list(self, blog_id=None):
 		"""
@@ -451,7 +451,7 @@ class MovableType(MetaWeblog):
 		"mt_tags",
 	]
 	
-	def __init__(self, serverapi, username, password, default_blog_id=None):
+	def __init__(self, serverapi, username, password, default_blog_id=None, verbose=None):
 		self.username = username
 		self.password = password
 		
@@ -463,7 +463,7 @@ class MovableType(MetaWeblog):
 			raise BlogError('XML-RPC API URL not found.')
 
 		# Connect to the api. Call mt.supportedMethods to keep a dictionary of available methods
-		self.server = xmlrpclib.ServerProxy(serverapi)
+		self.server = xmlrpclib.ServerProxy(serverapi, verbose=verbose)
 		self.list_methods()
 	
 	def list_methods(self):
